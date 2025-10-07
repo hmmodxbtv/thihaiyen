@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Bus ❤️ Snow Edition</title>
+<style>
+:root {
+  --sky:#bdf0ff;
+  --card:#ffffffee;
+  --primary:#2b8cff;
+  --success:#2edc8a;
+  --danger:#ff6b6b;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Poppins,Inter,system-ui;
+  background:linear-gradient(#c0f0ff,#eafaf2);
+  overflow:hidden;
+}
+.wrap{max-width:1200px;margin:0 auto;padding:16px;}
+header{display:flex;justify-content:space-between;align-items:center}
+h1{color:var(--primary);text-shadow:0 2px 8px #aef;font-size:22px}
+.badge{background:var(--card);padding:8px 12px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.08);font-weight:700}
+.hud{display:flex;gap:12px}
+.stage{margin-top:16px;border-radius:20px;overflow:hidden;border:1px solid rgba(0,0,0,0.06);box-shadow:0 16px 40px rgba(6,24,40,0.08);position:relative;background:#eafaff}
+.sky{height:180px;background:linear-gradient(#b2e7ff,#87e1ff);overflow:hidden;position:relative}
+.sun{position:absolute;right:80px;top:24px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#fff6c8,#ffd86b);box-shadow:0 0 60px rgba(255,200,80,0.3)}
+.cloud{position:absolute;width:140px;height:70px;background:white;border-radius:50px;filter:blur(2px);animation:movecloud 50s linear infinite}
+.cloud:nth-child(3){top:60px;left:-10%;animation-delay:-10s;width:160px;height:80px;opacity:0.7}
+@keyframes movecloud{0%{left:-20%}100%{left:120%}}
+.roadWrap{padding:18px;display:flex;flex-direction:column;align-items:center;gap:18px;position:relative;z-index:2}
+.road{width:90%;height:120px;background:linear-gradient(#4b4b4b,#2f2f2f);border-radius:18px;position:relative}
+.lane{position:absolute;left:6%;right:6%;top:28%;height:6px;background:repeating-linear-gradient(90deg,#fff 0 40px,transparent 40px 80px);opacity:0.25;border-radius:6px}
+.stopRow{position:absolute;left:6%;right:6%;top:8px;height:100%;display:flex;justify-content:space-between;align-items:center;padding:0 12px;pointer-events:none}
+.stop{width:52px;height:52px;border-radius:50%;background:var(--card);display:flex;align-items:center;justify-content:center;font-weight:900;box-shadow:0 6px 18px rgba(0,0,0,0.08);cursor:pointer;transition:.2s;pointer-events:auto}
+.stop.locked{filter:grayscale(0.7);opacity:0.6;cursor:not-allowed}
+.stop.done{background:linear-gradient(90deg,var(--success),#12b97d);color:#012;transform:scale(.9)}
+.busWrap{position:absolute;left:6%;top:40%;width:88%;height:100px;pointer-events:none}
+.bus{position:absolute;left:0;bottom:6px;transition:left 1s cubic-bezier(.2,.9,.2,1),transform .3s;filter:drop-shadow(0 14px 24px rgba(0,0,0,0.18))}
+.bus.run{animation:busmove .6s linear infinite}
+@keyframes busmove{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.bus svg{width:150px;height:90px}
+.card{width:86%;max-width:760px;background:var(--card);padding:16px;border-radius:14px;box-shadow:0 16px 48px rgba(8,30,50,0.08);display:flex;flex-direction:column;gap:12px;animation:fadein .8s ease}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.qtext{font-weight:800;color:#033b57;font-size:18px;text-align:center}
+.answers{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.ans{flex:1 1 45%;min-width:140px;padding:10px;border-radius:8px;background:#f7fcff;border:1px solid rgba(3,59,92,0.06);cursor:pointer;font-weight:800;text-align:center;transition:transform .12s,box-shadow .12s}
+.ans:hover{transform:translateY(-6px);box-shadow:0 8px 24px rgba(6,24,40,0.08)}
+.ans.correct{background:linear-gradient(90deg,var(--success),#12b97d);color:#022}
+.ans.wrong{background:linear-gradient(90deg,var(--danger),#ff6b6b);color:#210}
+footer{text-align:center;padding:10px;color:#346;font-size:14px}
+/* hearts */
+.heart{
+  position:absolute;width:18px;height:18px;background:red;
+  transform:rotate(45deg);
+  animation:fly 2s ease-out forwards;
+  z-index:5;opacity:.9;
+}
+.heart::before,.heart::after{
+  content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:red;
+}
+.heart::before{top:-9px;left:0}
+.heart::after{left:-9px;top:0}
+@keyframes fly{
+  0%{opacity:1;transform:scale(0.8) translateY(0) rotate(45deg)}
+  100%{opacity:0;transform:scale(1.8) translateY(-160px) rotate(45deg)}
+}
+/* snow */
+.snow{
+  position:absolute;top:-10px;width:8px;height:8px;background:white;
+  border-radius:50%;opacity:0.9;
+  animation:snowfall linear forwards;
+}
+@keyframes snowfall{
+  0%{transform:translateY(0) scale(1)}
+  100%{transform:translateY(200vh) scale(0.8);opacity:0}
+}
+/* menu */
+.menu{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:linear-gradient(180deg,#c1f3ff 0%,#fff 70%);
+  z-index:10;animation:fadein .6s ease;
+}
+.menu h2{font-size:36px;color:#046;font-weight:800;text-shadow:0 2px 8px #aef;margin-bottom:12px}
+.menu button{
+  background:linear-gradient(90deg,var(--primary),#00c8ff);
+  border:none;border-radius:14px;color:white;font-size:20px;
+  padding:14px 28px;cursor:pointer;font-weight:700;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  animation:pulse 2s infinite alternate;
+}
+@keyframes pulse{0%{transform:scale(1)}100%{transform:scale(1.1)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🚍 Bus - ôn tập chương 1 nhaa</h1>
+    <div class="hud">
+      <div class="badge" id="scoreBadge">Điểm: 0</div>
+      <div class="badge" id="qBadge">Câu: 0 / 10</div>
+    </div>
+  </header>
+
+  <div class="stage">
+    <div class="sky" id="sky">
+      <div class="sun"></div>
+      <div class="cloud"></div><div class="cloud"></div>
+    </div>
+
+    <div class="roadWrap">
+      <div class="card" id="card">
+        <div class="qtext" id="qText">Sẵn sàng lên chuyến xe hạnh phúc chưa nào?</div>
+        <div class="answers" id="answers" style="display:none;"></div>
+      </div>
+
+      <div class="road" id="road">
+        <div class="lane"></div>
+        <div class="stopRow" id="stopRow"></div>
+        <div class="busWrap">
+          <div class="bus" id="bus">
+            <svg viewBox="0 0 220 140" xmlns="http://www.w3.org/2000/svg">
+              <rect x="6" y="36" width="180" height="78" rx="16" fill="#ffcf55"/>
+              <rect x="36" y="20" width="120" height="46" rx="8" fill="#ffffff"/>
+              <rect x="18" y="46" width="20" height="18" rx="4" fill="#ffffff"/>
+              <circle cx="56" cy="120" r="12" fill="#2a2a2a"/>
+              <circle cx="140" cy="120" r="12" fill="#2a2a2a"/>
+              <circle cx="56" cy="120" r="6" fill="#ffd36b"/>
+              <circle cx="140" cy="120" r="6" fill="#ffd36b"/>
+              <path d="M36 36 L36 6 L156 6 L156 36" fill="#2b8cff" />
+              <text x="48" y="36" fill="#fff" font-weight="800" font-size="12">HAPPY BUS</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <footer>Trả lời đúng để xe chạy tiếp nhé 💨</footer>
+    </div>
+
+    <div class="menu" id="menu">
+      <h2>🚌 Bus</h2>
+      <button id="startBtn">Đi Thôi!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const QUESTIONS=[
+  {q:". Nguyên tử gồm có các hạt cơ bản nào?",opts:["A. Proton và electron","B. Proton và neutron","C. Proton, neutron và electron","D. Electron và neutron"],ans:"C. Proton, neutron và electron"},
+  {q:". Cấu hình electron của nguyên tử có Z = 10 là:?",opts:["A. 1s²2s²2p⁶","B. 1s²2s²2p⁴","C. 1s²2s²2p⁵","D. 1s²2s²2p⁶3s¹"],ans:"1s²2s²2p⁶"},
+  {q:". Đồng vị của Clo là:?",opts:["A. ³⁵₁₇Cl và ³⁷₁₇Cl","B. ³⁵₁₈Cl và ³⁷₁₇Cl","2C. ³⁵₁₇Cl và ³⁵₁₈Cl","D. ³⁷₁₆S và ³⁷₁₇Cl"],ans:"A. ³⁵₁₇Cl và ³⁷₁₇Cl5"},
+  {q:". Nguyên tố X có hai đồng vị: ³⁵X (60%) và ³⁷X (40%).Nguyên tử khối trung bình của X là?",opts:["A. 35,8","B. 36,2","C. 36,8","D. 36,0"],ans:"A. 35,8"},
+  {q:". Số khối A của nguyên tử được tính bằng:?",opts:["A. A = Z + N","B. A = Z − N","C. A = 2Z","D. A = Z × N"],ans:"A. A = Z + N"},
+  {q:". Nguyên tử có cấu hình electron lớp ngoài cùng là 3s²3p⁵ thuộc nhóm:?",opts:["A. IIA","B. VIIA","C. VIIIA","D. VIA"],ans:"B. VIIA"},
+  {q:". Nguyên tử có cấu hình electron 1s²2s²2p⁶3s²3p¹ là nguyên tố:?",opts:["A. Na","B. Mg","C. Al","D. Si"],ans:"C. Al"},
+  {q:". Nguyên tố Y có hai đồng vị ⁶³Y và ⁶⁵Y.Nguyên tử khối trung bình là 63,8. Phần trăm số nguyên tử ⁶³Y là:",opts:["A. 20%","B. 30%","C. 60%","D. 80%"],ans:"C. 60%"},
+  {q:". Một nguyên tử có tổng số hạt là 52, trong đó số hạt mang điện là 30.Số neutron là:?",opts:["A. 11","B. 22","C. 26","D. 23"],ans:"22"},
+  {q:". Clo có hai đồng vị ³⁵Cl (75,77%) và ³⁷Cl (24,23%).Nguyên tử khối trung bình của Clo gần bằng:?",opts:["A. 35,5","B. 35,0","C. 36,0","D. 34,5"],ans:"A.35,5"},
+];
+
+const STOPS=10;
+let score=0,idx=0,done=0;
+const scoreBadge=document.getElementById('scoreBadge');
+const qBadge=document.getElementById('qBadge');
+const qText=document.getElementById('qText');
+const answersEl=document.getElementById('answers');
+const bus=document.getElementById('bus');
+const menu=document.getElementById('menu');
+const stopRow=document.getElementById('stopRow');
+const sky=document.getElementById('sky');
+
+function buildStops(){
+  for(let i=0;i<STOPS;i++){
+    const s=document.createElement('div');
+    s.className='stop'+(i>0?' locked':'');
+    s.textContent=i+1;
+    stopRow.appendChild(s);
+  }
+}
+buildStops();
+function updateHUD(){scoreBadge.textContent=`Điểm: ${score}`;qBadge.textContent=`Câu: ${done} / ${STOPS}`;}
+function moveBusTo(i,cb){
+  const percent=(i/(STOPS-1))*100;
+  bus.classList.add('run');
+  bus.style.left=`calc(${percent}% - 6%)`;
+  setTimeout(()=>{bus.classList.remove('run');cb&&cb();},1000);
+}
+function showQ(i){
+  const q=QUESTIONS[i];
+  qText.textContent=q.q;
+  answersEl.innerHTML='';
+  answersEl.style.display='flex';
+  q.opts.forEach(o=>{
+    const d=document.createElement('div');
+    d.className='ans';d.textContent=o;
+    d.onclick=()=>choose(d,o,q.ans);
+    answersEl.appendChild(d);
+  });
+}
+function choose(btn,ch,ans){
+  document.querySelectorAll('.ans').forEach(x=>x.style.pointerEvents='none');
+  if(ch===ans){
+    btn.classList.add('correct');
+    score+=10;done++;
+    heartBurst();
+    unlock(idx);
+  }else{
+    btn.classList.add('wrong');
+    score=Math.max(0,score-1);
+  }
+  updateHUD();
+  setTimeout(()=>{
+    answersEl.style.display='none';
+    if(done>=STOPS){qText.textContent=`🎉 Hoàn thành! Điểm: ${score}`;return;}
+    idx++;
+    moveBusTo(idx,()=>showQ(idx));
+  },900);
+}
+function unlock(i){
+  const s=stopRow.children[i];
+  if(s){s.classList.remove('locked');s.classList.add('done');}
+}
+function heartBurst(){
+  for(let i=0;i<10;i++){
+    const h=document.createElement('div');
+    h.className='heart';
+    h.style.left=(50+Math.random()*40-20)+'%';
+    h.style.bottom='60px';
+    h.style.background=`hsl(${Math.random()*360},80%,60%)`;
+    h.style.animationDuration=1.5+Math.random()+'s';
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),2000);
+  }
+}
+// ❄️ hiệu ứng tuyết
+function snow(){
+  const flake=document.createElement('div');
+  flake.className='snow';
+  flake.style.left=Math.random()*100+'%';
+  flake.style.width=flake.style.height=(4+Math.random()*6)+'px';
+  flake.style.animationDuration=(5+Math.random()*5)+'s';
+  flake.style.opacity=Math.random()*0.9+0.1;
+  sky.appendChild(flake);
+  setTimeout(()=>flake.remove(),10000);
+}
+setInterval(snow,150);
+
+document.getElementById('startBtn').onclick=()=>{
+  menu.style.display='none';
+  updateHUD();
+  moveBusTo(0,()=>showQ(0));
+};
+</script>
+</body>
+</html>
