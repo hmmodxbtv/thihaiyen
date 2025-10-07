@@ -156,7 +156,7 @@ const QUESTIONS=[
   {q:". Nguyên tử có cấu hình electron 1s²2s²2p⁶3s²3p¹ là nguyên tố:?",opts:["A. Na","B. Mg","C. Al","D. Si"],ans:"C. Al"},
   {q:". Nguyên tố Y có hai đồng vị ⁶³Y và ⁶⁵Y.Nguyên tử khối trung bình là 63,8. Phần trăm số nguyên tử ⁶³Y là:",opts:["A. 20%","B. 30%","C. 60%","D. 80%"],ans:"C. 60%"},
   {q:". Một nguyên tử có tổng số hạt là 52, trong đó số hạt mang điện là 30.Số neutron là:?",opts:["A. 11","B. 22","C. 26","D. 23"],ans:"B. 22"},
-  {q:". Clo có hai đồng vị ³⁵Cl (75,77%) và ³⁷Cl (24,23%).Nguyên tử khối trung bình của Clo gần bằng:?",opts:["A. 35,5","B. 35,0","C. 36,0","D. 34,5"],ans:"A. 35,5"},
+  {q:". Clo có hai đồng vị ³⁵Cl (75,77%) và ³⁷Cl (24,23%).Nguyên tử khối trung bình của Cl gần bằng:?",opts:["A. 35,5","B. 35,0","C. 36,0","D. 34,5"],ans:"A. 35,5"},
 ];
 
 const STOPS=10;
@@ -198,25 +198,42 @@ function showQ(i){
     answersEl.appendChild(d);
   });
 }
-function choose(btn,ch,ans){
-  document.querySelectorAll('.ans').forEach(x=>x.style.pointerEvents='none');
-  if(ch===ans){
+function choose(btn, ch, ans){
+  document.querySelectorAll('.ans').forEach(x => x.style.pointerEvents = 'none'); // khóa tạm thời các nút
+
+  if(ch === ans){
     btn.classList.add('correct');
-    score+=10;done++;
+    score += 10;
+    done++;
     heartBurst();
     unlock(idx);
-  }else{
+    updateHUD();
+
+    // Chỉ chuyển câu khi trả lời đúng
+    setTimeout(() => {
+      answersEl.style.display = 'none';
+      idx++;
+      if(done >= STOPS){
+        qText.textContent = `🎉 Hoàn thành! Điểm: ${score}`;
+        return;
+      }
+      moveBusTo(idx, () => showQ(idx));
+    }, 900);
+  } else {
     btn.classList.add('wrong');
-    score=Math.max(0,score-1);
+    score = Math.max(0, score - 1);
+    updateHUD();
+
+    // Trả lời sai: cho phép thử lại sau 0.9s
+    setTimeout(() => {
+      document.querySelectorAll('.ans').forEach(x => {
+        x.classList.remove('wrong');       // xóa hiệu ứng sai
+        x.style.pointerEvents = 'auto';    // mở khóa nút
+      });
+    }, 900);
   }
-  updateHUD();
-  setTimeout(()=>{
-    answersEl.style.display='none';
-    if(done>=STOPS){qText.textContent=`🎉 Hoàn thành! Điểm: ${score}`;return;}
-    idx++;
-    moveBusTo(idx,()=>showQ(idx));
-  },900);
 }
+
 function unlock(i){
   const s=stopRow.children[i];
   if(s){s.classList.remove('locked');s.classList.add('done');}
@@ -254,6 +271,7 @@ document.getElementById('startBtn').onclick=()=>{
 </script>
 </body>
 </html>
+
 
 
 
